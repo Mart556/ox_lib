@@ -44,7 +44,8 @@ end
 
 
 local function badResponse(endpoint, status, response)
-    warn(('unable to submit logs to %s (status: %s)\n%s'):format(endpoint, status, json.encode(response, { indent = true })))
+    warn(('unable to submit logs to %s (status: %s)\n%s'):format(endpoint, status,
+        json.encode(response, { indent = true })))
 end
 
 local playerData = {}
@@ -151,7 +152,8 @@ if service == 'datadog' then
                         if status ~= 202 then
                             if type(response) == 'string' then
                                 response = json.decode(response:sub(10)) or response
-                                badResponse(endpoint, status, type(response) == 'table' and response.errors[1] or response)
+                                badResponse(endpoint, status,
+                                    type(response) == 'table' and response.errors[1] or response)
                             end
                         end
                     end, 'POST', json.encode(buffer), headers)
@@ -322,13 +324,10 @@ if service == 'fivemerr' then
                     end, 'POST', json.encode(buffer), headers)
 
                     buffer = nil
-                    bufferSize = 0
                 end)
             end
 
-            bufferSize += 1
-
-            buffer[bufferSize] = {
+            buffer = {
                 level = "info",
                 message = event .. " - " .. message,
                 resource = cache.resource,
