@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, createStyles, Text, Progress, Group, Flex } from '@mantine/core';
+import { Box, Text, Progress, Group, Flex } from '@mantine/core';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import { fetchNui } from '../../utils/fetchNui';
 import ScaleFade from '../../transitions/ScaleFade';
@@ -85,13 +85,13 @@ const Progressbar: React.FC = () => {
           }}
         >
           <Group position="apart" mb={5}>
-            <Text size="sm" fw={500} sx={{ textShadow: '1px 1px 1px #222' }}>
+            <Text size="md" fw={500} sx={{ textShadow: '1px 1px 1px #222' }}>
               {label}
             </Text>
 
             <Flex align="center" gap={3}>
               <IconStopwatch size={16} />
-              <Text size="sm" fw={500} sx={{ textShadow: '1px 1px 1px #222' }}>
+              <Text size="md" fw={500} sx={{ textShadow: '1px 1px 1px #222' }}>
                 {timeLeft}s
               </Text>
             </Flex>
@@ -99,7 +99,7 @@ const Progressbar: React.FC = () => {
 
           <Box
             sx={{
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              backgroundColor: 'rgba(0, 0, 0, 0.2)', // light green background
               borderRadius: 5,
             }}
           >
@@ -108,11 +108,11 @@ const Progressbar: React.FC = () => {
                 animation: 'progress-bar linear',
                 animationDuration: `${duration}ms`,
                 animationPlayState: 'running',
+                backgroundColor: 'rgb(14, 178, 14)', // light green background
               }}
               onAnimationEnd={() => setVisible(false)}
-              color="green.6"
               radius="md"
-              size="md"
+              size="lg"
             />
           </Box>
 
