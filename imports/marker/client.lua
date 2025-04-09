@@ -1,3 +1,11 @@
+--[[
+    https://github.com/overextended/ox_lib
+
+    This file is licensed under LGPL-3.0 or higher <https://www.gnu.org/licenses/lgpl-3.0.en.html>
+
+    Copyright © 2025 Linden <https://github.com/thelindat>
+]]
+
 ---@diagnostic disable: param-type-mismatch
 lib.marker = {}
 
@@ -141,18 +149,6 @@ function lib.marker.new(options)
     error(("expected marker type to have type 'string' or 'number' (received %s)"):format(type(options.type)))
   end
 
-  if type(options.bobUpAndDown) ~= "boolean" then
-    options.bobUpAndDown = defaultBobUpAndDown
-  end
-
-  if type(options.faceCamera) ~= "boolean" then
-    options.faceCamera = defaultFaceCamera
-  end
-
-  if type(options.rotate) ~= "boolean" then
-    options.rotate = defaultRotate
-  end
-
   local self = {}
   self.type = markerType
   self.coords = options.coords
@@ -161,9 +157,9 @@ function lib.marker.new(options)
   self.height = options.height or defaultSize.height
   self.rotation = options.rotation or defaultRotation
   self.direction = options.direction or defaultDirection
-  self.bobUpAndDown = options.bobUpAndDown or defaultBobUpAndDown
-  self.faceCamera = options.faceCamera or defaultFaceCamera
-  self.rotate = options.rotate or defaultRotate
+  self.bobUpAndDown = type(options.bobUpAndDown) == 'boolean' and options.bobUpAndDown
+  self.faceCamera = type(options.faceCamera) ~= 'boolean' or options.faceCamera
+  self.rotate = type(options.rotate) == 'boolean' and options.rotate
   self.textureDict = options.textureDict or defaultTextureDict
   self.textureName = options.textureName or defaultTextureName
   self.draw = drawMarker
