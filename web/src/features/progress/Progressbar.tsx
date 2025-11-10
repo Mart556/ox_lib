@@ -37,12 +37,11 @@ const Progressbar: React.FC = () => {
   }, []);
 
   const startProgress = useCallback((newDuration: number, newLabel: string) => {
-    // Clear any existing interval first
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    const calculatedTimeLeft = Math.floor(newDuration / 1000);
+    const calculatedTimeLeft = Math.ceil(newDuration / 1000);
 
     setProgressState({
       duration: newDuration,
@@ -138,7 +137,9 @@ const Progressbar: React.FC = () => {
         <Box sx={progressContainerStyle}>
           <Progress
             sx={progressStyle}
-            onAnimationEnd={cancelProgress}
+            onAnimationEnd={() => {
+              setProgressState((prev) => ({ ...prev, visible: false }));
+            }}
             radius="md"
             size="lg"
           />
