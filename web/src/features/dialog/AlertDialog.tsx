@@ -1,4 +1,4 @@
-import { Button, createStyles, Group, Modal, Stack, useMantineTheme } from '@mantine/core';
+import { createStyles, Group, Modal, Stack, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
@@ -40,49 +40,56 @@ const AlertDialog: React.FC = () => {
 
   return (
     <>
-      <Modal
-        opened={opened}
-        centered={dialogData.centered}
-        size={dialogData.size || 'md'}
-        overflow={dialogData.overflow ? 'inside' : 'outside'}
-        closeOnClickOutside={false}
-        onClose={() => {
-          setOpened(false);
-          closeAlert('cancel');
-        }}
-        withCloseButton={false}
-        overlayOpacity={0.5}
-        exitTransitionDuration={150}
-        transition="fade"
-        title={<ReactMarkdown components={MarkdownComponents}>{dialogData.header}</ReactMarkdown>}
-      >
-        <Stack className={classes.contentStack}>
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              ...MarkdownComponents,
-              img: ({ ...props }) => <img style={{ maxWidth: '100%', maxHeight: '100%' }} {...props} />,
+      {opened && (
+        <div
+          className="alertDialog"
+          onClick={() => {
+            if (!dialogData.closeOnClickOutside) return;
+            setOpened(false);
+            closeAlert('cancel');
+          }}
+        >
+          <div
+            className="custom-modal"
+            style={{
+              width: dialogData.size === 'md' ? '46.2963vh' : dialogData.size,
+              maxHeight: dialogData.overflow === 'inside' ? '80vh' : 'unset',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {dialogData.content}
-          </ReactMarkdown>
-          <Group position="right" spacing={10}>
-            {dialogData.cancel && (
-              <Button uppercase variant="default" onClick={() => closeAlert('cancel')} mr={3}>
-                {dialogData.labels?.cancel || locale.ui.cancel}
-              </Button>
+            {dialogData.header && (
+              <div className="alertDialogHeader">
+                <ReactMarkdown components={MarkdownComponents}>{dialogData.header}</ReactMarkdown>
+              </div>
             )}
-            <Button
-              uppercase
-              variant={dialogData.cancel ? 'light' : 'default'}
-              color={dialogData.cancel ? theme.primaryColor : undefined}
-              onClick={() => closeAlert('confirm')}
-            >
-              {dialogData.labels?.confirm || locale.ui.confirm}
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+
+            {/* Content */}
+            <div className="alertDialogText">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  ...MarkdownComponents,
+                  img: (props) => <img style={{ maxWidth: '100%', maxHeight: '100%' }} {...props} />,
+                }}
+              >
+                {dialogData.content}
+              </ReactMarkdown>
+
+              <div className="alertDialogButtons">
+                {dialogData.cancel && (
+                  <button className="cancelButton" onClick={() => closeAlert('cancel')}>
+                    {dialogData.labels?.cancel || locale.ui.cancel}
+                  </button>
+                )}
+
+                <button className="confirmButton" onClick={() => closeAlert('confirm')}>
+                  {dialogData.labels?.confirm || locale.ui.confirm}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

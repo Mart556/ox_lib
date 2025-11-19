@@ -17,9 +17,9 @@ export const debugMenu = () => {
             checked: true,
           },
           {
-            label: 'Vehicle class',
-            values: ['pogchamp', 'nice champ', { label: 'POGGERS', description: 'CHAMPPERS' }],
-            icon: 'tag',
+            label: 'Vehicle ',
+            values: ['pogchamp', 'nice champ', { label: 'sdsd', description: 'CHAMPPERS' }],
+            icon: 'oil-can',
             description: 'Side scroll general description',
           },
           {

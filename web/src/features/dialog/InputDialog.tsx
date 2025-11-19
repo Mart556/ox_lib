@@ -41,22 +41,20 @@ const InputDialog: React.FC = () => {
     setFields(data);
     setVisible(true);
     data.rows.forEach((row, index) => {
-      fieldForm.insert(
-        index,
-        {
-          value:
-            row.type !== 'checkbox'
-              ? row.type === 'date' || row.type === 'date-range' || row.type === 'time'
-                ? // Set date to current one if default is set to true
-                  row.default === true
-                  ? new Date().getTime()
-                  : Array.isArray(row.default)
-                  ? row.default.map((date) => new Date(date).getTime())
-                  : row.default && new Date(row.default).getTime()
+      fieldForm.insert(index, {
+        value:
+          row.type !== 'checkbox'
+            ? row.type === 'date' || row.type === 'date-range' || row.type === 'time'
+              ? row.default === true
+                ? new Date().getTime()
+                : Array.isArray(row.default)
+                ? row.default.map((date) => new Date(date).getTime())
                 : row.default
-              : row.checked,
-        } || { value: null }
-      );
+                ? new Date(row.default).getTime()
+                : null
+              : row.default
+            : row.checked,
+      });
       // Backwards compat with new Select data type
       if (row.type === 'select' || row.type === 'multi-select') {
         row.options = row.options.map((option) =>
@@ -97,77 +95,83 @@ const InputDialog: React.FC = () => {
 
   return (
     <>
-      <Modal
-        opened={visible}
-        onClose={handleClose}
-        centered
-        closeOnEscape={fields.options?.allowCancel !== false}
-        closeOnClickOutside={false}
-        size={fields.options?.size || 'xs'}
-        styles={{ title: { textAlign: 'center', width: '100%', fontSize: 18 } }}
-        title={fields.heading}
-        withCloseButton={false}
-        overlayOpacity={0.5}
-        transition="fade"
-        exitTransitionDuration={150}
-      >
-        <form onSubmit={onSubmit}>
-          <Stack>
-            {fieldForm.fields.map((item, index) => {
-              const row = fields.rows[index];
-              return (
-                <React.Fragment key={item.id}>
-                  {row.type === 'input' && (
-                    <InputField
-                      register={form.register(`test.${index}.value`, { required: row.required })}
-                      row={row}
-                      index={index}
-                    />
-                  )}
-                  {row.type === 'checkbox' && (
-                    <CheckboxField
-                      register={form.register(`test.${index}.value`, { required: row.required })}
-                      row={row}
-                      index={index}
-                    />
-                  )}
-                  {(row.type === 'select' || row.type === 'multi-select') && (
-                    <SelectField row={row} index={index} control={form.control} />
-                  )}
-                  {row.type === 'number' && <NumberField control={form.control} row={row} index={index} />}
-                  {row.type === 'slider' && <SliderField control={form.control} row={row} index={index} />}
-                  {row.type === 'color' && <ColorField control={form.control} row={row} index={index} />}
-                  {row.type === 'time' && <TimeField control={form.control} row={row} index={index} />}
-                  {row.type === 'date' || row.type === 'date-range' ? (
-                    <DateField control={form.control} row={row} index={index} />
-                  ) : null}
-                  {row.type === 'textarea' && (
-                    <TextareaField
-                      register={form.register(`test.${index}.value`, { required: row.required })}
-                      row={row}
-                      index={index}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
-            <Group position="right" spacing={10}>
-              <Button
-                uppercase
-                variant="default"
-                onClick={() => handleClose()}
-                mr={3}
-                disabled={fields.options?.allowCancel === false}
-              >
-                {locale.ui.cancel}
-              </Button>
-              <Button uppercase variant="light" type="submit">
-                {locale.ui.confirm}
-              </Button>
-            </Group>
-          </Stack>
-        </form>
-      </Modal>
+      {visible && (
+        <div
+          className="customModalOverlay"
+          onClick={(e) => {
+            e.stopPropagation();
+            // if (fields.options?.allowCancel !== false) {
+            //   handleClose();
+            // }
+          }}
+        >
+          <div className="customModalContent" onClick={(e) => e.stopPropagation()}>
+            <div className="topCont">
+              <h2 className="customModalTitle">{fields.heading}</h2>
+
+              <h3 className="customModalheader">Please fill in the blank spaces provided below.</h3>
+            </div>
+
+            <form onSubmit={onSubmit}>
+              <div className="customModalBody">
+                {fieldForm.fields.map((item, index) => {
+                  const row = fields.rows[index];
+                  return (
+                    <React.Fragment key={item.id}>
+                      {row.type === 'input' && (
+                        <InputField
+                          register={form.register(`test.${index}.value`, { required: row.required })}
+                          row={row}
+                          index={index}
+                        />
+                      )}
+                      {row.type === 'checkbox' && (
+                        <CheckboxField
+                          register={form.register(`test.${index}.value`, { required: row.required })}
+                          row={row}
+                          index={index}
+                        />
+                      )}
+                      {(row.type === 'select' || row.type === 'multi-select') && (
+                        <SelectField row={row} index={index} control={form.control} />
+                      )}
+                      {row.type === 'number' && <NumberField control={form.control} row={row} index={index} />}
+                      {row.type === 'slider' && <SliderField control={form.control} row={row} index={index} />}
+                      {row.type === 'color' && <ColorField control={form.control} row={row} index={index} />}
+                      {row.type === 'time' && <TimeField control={form.control} row={row} index={index} />}
+                      {row.type === 'date' || row.type === 'date-range' ? (
+                        <DateField control={form.control} row={row} index={index} />
+                      ) : null}
+                      {row.type === 'textarea' && (
+                        <TextareaField
+                          register={form.register(`test.${index}.value`, { required: row.required })}
+                          row={row}
+                          index={index}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+
+              <div className="customModalButtons">
+                <button
+                  type="button"
+                  className="cancelButton2"
+                  onClick={() => handleClose()}
+                  disabled={fields.options?.allowCancel === false}
+                >
+                  {locale.ui.cancel}
+                </button>
+
+                <button type="submit" className="confirmButton2">
+                  {locale.ui.confirm}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };

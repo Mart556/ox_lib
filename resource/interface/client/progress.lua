@@ -174,7 +174,8 @@ function lib.progressBar(data)
             action = 'progress',
             data = {
                 label = data.label,
-                duration = data.duration
+                duration = data.duration,
+                canCancel = data.canCancel or false,
             }
         })
 

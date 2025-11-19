@@ -7,12 +7,12 @@ import { IconStopwatch } from '@tabler/icons-react';
 import type { ProgressbarProps } from '../../typings';
 
 const Progressbar: React.FC = () => {
-  // Group related state together
   const [progressState, setProgressState] = useState<{
     duration: number;
     timeLeft: number;
     label: string;
     visible: boolean;
+    canCancel?: boolean;
   }>({
     duration: 0,
     timeLeft: 0,
@@ -22,7 +22,6 @@ const Progressbar: React.FC = () => {
   const { duration, timeLeft, label, visible } = progressState;
   const intervalRef = useRef<number | null>(null);
 
-  // Memoize handlers to prevent unnecessary re-renders
   const cancelProgress = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -36,33 +35,37 @@ const Progressbar: React.FC = () => {
     }));
   }, []);
 
-  const startProgress = useCallback((newDuration: number, newLabel: string) => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
+  const startProgress = useCallback(
+    (newDuration: number, newLabel: string, newCanCancel?: boolean) => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
 
-    const calculatedTimeLeft = Math.ceil(newDuration / 1000);
+      const calculatedTimeLeft = Math.ceil(newDuration / 1000);
 
-    setProgressState({
-      duration: newDuration,
-      timeLeft: calculatedTimeLeft,
-      label: newLabel,
-      visible: true,
-    });
-
-    intervalRef.current = window.setInterval(() => {
-      setProgressState((prev) => {
-        const newTime = prev.timeLeft - 1;
-
-        if (newTime <= 0) {
-          cancelProgress();
-          return { ...prev, timeLeft: 0 };
-        }
-
-        return { ...prev, timeLeft: newTime };
+      setProgressState({
+        duration: newDuration,
+        timeLeft: calculatedTimeLeft,
+        label: newLabel,
+        visible: true,
+        canCancel: newCanCancel,
       });
-    }, 1000);
-  }, [cancelProgress]);
+
+      intervalRef.current = window.setInterval(() => {
+        setProgressState((prev) => {
+          const newTime = prev.timeLeft - 1;
+
+          if (newTime <= 0) {
+            cancelProgress();
+            return { ...prev, timeLeft: 0 };
+          }
+
+          return { ...prev, timeLeft: newTime };
+        });
+      }, 1000);
+    },
+    [cancelProgress]
+  );
 
   // Clean up interval on unmount
   useEffect(() => {
@@ -77,7 +80,7 @@ const Progressbar: React.FC = () => {
   useNuiEvent('progressCancel', cancelProgress);
 
   useNuiEvent<ProgressbarProps>('progress', (data) => {
-    startProgress(data.duration, data.label);
+    startProgress(data.duration, data.label, data?.canCancel);
   });
 
   // Handle keyboard events
@@ -146,9 +149,15 @@ const Progressbar: React.FC = () => {
         </Box>
 
         <Box mt={10}>
-          <Text size="xs" fw={500} sx={textStyle}>
-            Vajuta <Text span c="yellow.5" fw={700}>X</Text> katkestamiseks.
-          </Text>
+          {progressState.canCancel && (
+            <Text size="xs" fw={500} sx={textStyle}>
+              Vajuta{' '}
+              <Text span c="yellow.5" fw={700}>
+                X
+              </Text>{' '}
+              katkestamiseks.
+            </Text>
+          )}
         </Box>
       </Box>
     </ScaleFade>
