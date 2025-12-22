@@ -61,6 +61,8 @@ const useStyles = createStyles((theme, params: { disabled?: boolean; readOnly?: 
     maxWidth: 256,
     width: 'fit-content',
     border: 'none',
+    background: `radial-gradient(140.75% 140.75% at 50% 50%, rgba(26, 27, 30, 0.97) 0%, rgba(8, 8, 9, 0.87) 100%),	
+    linear-gradient(156deg, rgba(255, 255, 255, 0) 38.82%, rgba(255, 255, 255, 0.1) 131.78%)`,
   },
   buttonStack: {
     gap: 4,

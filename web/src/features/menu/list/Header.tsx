@@ -6,7 +6,7 @@ const useStyles = createStyles((theme) => ({
     textAlign: 'center',
     borderTopLeftRadius: theme.radius.md,
     borderTopRightRadius: theme.radius.md,
-    height: '12.037vh',
+    height: '5.5vh',
     width: '30.5556vh',
     display: 'flex',
     flexDirection: 'column',
@@ -15,7 +15,7 @@ const useStyles = createStyles((theme) => ({
   },
   heading: {
     paddingTop: '0.5556vh',
-    fontSize: '1.35vh',
+    fontSize: '1.6vh',
     fontWeight: 600,
     color: '#FFF',
     fontFamily: 'Inter',
@@ -29,7 +29,6 @@ const Header: React.FC<{ title: string }> = ({ title }) => {
     <>
       <Box className={classes.container}>
         <Text className={classes.heading}>{title}</Text>
-        <Text className={'menuDesc2'}>The most beautiful menu you could ever see, with plenty of options..</Text>
       </Box>
     </>
   );
