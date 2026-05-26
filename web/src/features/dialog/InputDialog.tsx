@@ -109,7 +109,7 @@ const InputDialog: React.FC = () => {
             <div className="topCont">
               <h2 className="customModalTitle">{fields.heading}</h2>
 
-              <h3 className="customModalheader">Please fill in the blank spaces provided below.</h3>
+              <h3 className="customModalheader">Palun täida kõik vajalikud väljad.</h3>
             </div>
 
             <form onSubmit={onSubmit}>
