@@ -19,6 +19,7 @@ const Progressbar: React.FC = () => {
     label: '',
     visible: false,
   });
+
   const { duration, timeLeft, label, visible } = progressState;
   const intervalRef = useRef<number | null>(null);
 
@@ -67,7 +68,6 @@ const Progressbar: React.FC = () => {
     [cancelProgress]
   );
 
-  // Clean up interval on unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -76,14 +76,11 @@ const Progressbar: React.FC = () => {
     };
   }, []);
 
-  // Handle NUI events
   useNuiEvent('progressCancel', cancelProgress);
-
   useNuiEvent<ProgressbarProps>('progress', (data) => {
     startProgress(data.duration, data.label, data?.canCancel);
   });
 
-  // Handle keyboard events
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'x' || event.key === 'X') {
@@ -95,45 +92,96 @@ const Progressbar: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [cancelProgress]);
 
-  // Extract styles for better organization
-  const containerStyle = {
-    width: 300,
+  // Clean, borderless floating container
+  const floatingContainerStyle = {
+    width: 320,
     position: 'fixed' as const,
-    bottom: 30,
+    bottom: 60,
     left: '50%',
     transform: 'translateX(-50%)',
     zIndex: 9999,
-    padding: 10,
-    borderRadius: 10,
+    pointerEvents: 'none' as const,
+  };
+
+  // High shadows applied to text since the background block is gone
+  const textLabelStyle = {
+    color: '#ffffff',
+    fontSize: '14px',
+    fontWeight: 600,
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase' as const,
+    textShadow: '0 2px 4px rgba(0, 0, 0, 0.9), 0 4px 12px rgba(0, 0, 0, 0.6)',
+  };
+
+  const timerStyle = {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontVariantNumeric: 'tabular-nums',
+    fontSize: '13px',
+    fontWeight: 600,
+    textShadow: '0 2px 4px rgba(0, 0, 0, 0.9)',
   };
 
   const progressContainerStyle = {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     borderRadius: 5,
+    padding: '3px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.5)',
   };
 
   const progressStyle = {
-    animation: 'progress-bar linear',
-    animationDuration: `${duration}ms`,
-    animationPlayState: 'running',
-    backgroundColor: 'rgb(14, 178, 14)',
+    backgroundColor: 'transparent',
+    height: 7,
+    borderRadius: '2px',
+    overflow: 'hidden' as const,
+
+    '& .mantine-Progress-bar': {
+      position: 'relative' as const,
+      overflow: 'hidden' as const,
+      animation: `progress-bar ${duration}ms linear running`,
+      background: 'linear-gradient(90deg, #ff4500 0%, #ff7300 100%)',
+      borderRadius: '2px',
+      boxShadow: '0 0 10px rgba(255, 69, 0, 0.5)',
+
+      // Smooth hardware accelerated overlay
+      '&::after': {
+        content: '""',
+        position: 'absolute' as const,
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%)',
+        transform: 'translateX(-100%)',
+        animation: 'liquid-sweep 2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+      },
+    },
+
+    '@keyframes liquid-sweep': {
+      '0%': { transform: 'translateX(-100%)' },
+      '100%': { transform: 'translateX(100%)' },
+    },
   };
 
-  const textStyle = { textShadow: '1px 1px 1px #222' };
+  const keycapStyle = {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    border: '1px solid rgba(255, 255, 255, 0.25)',
+    borderRadius: '5px',
+    padding: '2px 6px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+  };
 
   return (
     <ScaleFade visible={visible} onExitComplete={() => fetchNui('progressComplete')}>
-      <Box sx={containerStyle}>
-        <Group position="apart" mb={5}>
-          <Text size="md" fw={500} sx={textStyle}>
-            {label}
-          </Text>
+      <Box sx={floatingContainerStyle}>
+        <Group position="apart" mb={4} px={4}>
+          <Text sx={textLabelStyle}>{label}</Text>
 
-          <Flex align="center" gap={3}>
-            <IconStopwatch size={16} />
-            <Text size="md" fw={500} sx={textStyle}>
-              {timeLeft}s
-            </Text>
+          <Flex align="center" gap={5}>
+            <IconStopwatch size={14} color="#fff" style={{ filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.6))' }} />
+            <Text sx={timerStyle}>{timeLeft}s</Text>
           </Flex>
         </Group>
 
@@ -143,22 +191,29 @@ const Progressbar: React.FC = () => {
             onAnimationEnd={() => {
               setProgressState((prev) => ({ ...prev, visible: false }));
             }}
-            radius="md"
-            size="lg"
+            value={100}
           />
         </Box>
 
-        <Box mt={10}>
-          {progressState.canCancel && (
-            <Text size="xs" fw={500} sx={textStyle}>
-              Vajuta{' '}
-              <Text span c="yellow.5" fw={700}>
-                X
-              </Text>{' '}
-              katkestamiseks.
+        {progressState.canCancel && (
+          <Flex align="center" justify="center" gap={6} mt={12}>
+            <Text size="xs" fw={600} sx={{ color: '#eee', textShadow: '0 2px 4px rgba(0,0,0,0.9)' }}>
+              Vajuta
             </Text>
-          )}
-        </Box>
+            <Box sx={keycapStyle}>
+              <Text
+                size="xs"
+                fw={800}
+                sx={{ color: '#ffb300', fontSize: '11px', fontFamily: 'monospace', lineHeight: 1 }}
+              >
+                X
+              </Text>
+            </Box>
+            <Text size="xs" fw={600} sx={{ color: '#eee', textShadow: '0 2px 4px rgba(0,0,0,0.9)' }}>
+              katkestamiseks
+            </Text>
+          </Flex>
+        )}
       </Box>
     </ScaleFade>
   );

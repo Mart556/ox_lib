@@ -439,6 +439,14 @@ code {
   animation: fadeIn 0.2s ease;
 }
 
+.no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
 .customModalTitle {
   align-self: stretch;
   text-align: center;
@@ -550,7 +558,7 @@ code {
   font-weight: 500;
 
   line-height: 133.736%; /* 15.246px */
-  margin-top: -2vh;
+  margin-top: -2.3vh;
   align-self: stretch;
 }
 

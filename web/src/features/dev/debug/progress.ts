@@ -7,7 +7,8 @@ export const debugProgressbar = () => {
       action: 'progress',
       data: {
         label: 'Drinking Water',
-        duration: 1533333000,
+        duration: 30000,
+        canCancel: true,
       },
     },
   ]);
@@ -19,7 +20,7 @@ export const debugCircleProgressbar = () => {
       action: 'circleProgress',
       data: {
         label: 'Using Lockpick',
-        duration: 1533333000
+        duration: 30000,
       },
     },
   ]);
